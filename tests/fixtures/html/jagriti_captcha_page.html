@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Security Check - Jagriti</title>
+</head>
+<body>
+    <div id="captcha-container">
+        <h2>Security Check Required</h2>
+        <p>Please complete the security check to verify you are human.</p>
+        
+        <div class="captcha-widget">
+            <div class="recaptcha-container">
+                <iframe src="https://www.google.com/recaptcha/api2/anchor"></iframe>
+            </div>
+        </div>
+        
+        <form method="post">
+            <input type="hidden" name="captcha_response" id="captcha_response">
+            <button type="submit" disabled>Verify and Continue</button>
+        </form>
+        
+        <p class="help-text">
+            If you are having trouble with the captcha, please try refreshing the page.
+        </p>
+    </div>
+</body>
+</html>

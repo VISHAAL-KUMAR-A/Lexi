@@ -83,6 +83,33 @@ class Settings(BaseSettings):
         alias="PORT",
     )
 
+    # Jagriti client security and robustness settings
+    allow_captcha_solver: bool = Field(
+        default=False,
+        description="Allow captcha solver service integration (placeholder)",
+        alias="ALLOW_CAPTCHA_SOLVER",
+    )
+    jagriti_concurrent_limit: int = Field(
+        default=5,
+        description="Maximum concurrent requests to Jagriti",
+        alias="JAGRITI_CONCURRENT_LIMIT",
+    )
+    jagriti_request_delay_min: float = Field(
+        default=0.05,  # 50ms
+        description="Minimum delay between requests (seconds)",
+        alias="JAGRITI_REQUEST_DELAY_MIN",
+    )
+    jagriti_request_delay_max: float = Field(
+        default=0.3,  # 300ms
+        description="Maximum delay between requests (seconds)",
+        alias="JAGRITI_REQUEST_DELAY_MAX",
+    )
+    jagriti_retry_backoff_factor: float = Field(
+        default=2.0,
+        description="Exponential backoff factor for retries",
+        alias="JAGRITI_RETRY_BACKOFF_FACTOR",
+    )
+
 
 @lru_cache()
 def get_settings() -> Settings:

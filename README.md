@@ -14,20 +14,24 @@ A FastAPI backend that proxies and normalizes case-search results from Jagriti (
 
 ## API Endpoints
 
+### Deployed API
+**Live API URL**: https://lexi-2zo3.onrender.com
+**Interactive Documentation**: https://lexi-2zo3.onrender.com/docs
+
 ### Meta Endpoints
 - `GET /states` - Get list of available states
 - `GET /commissions/{state_id}` - Get commissions for a specific state
 
 ### Case Search Endpoints
-All case search endpoints support both GET (query parameters) and POST (JSON body) methods:
+All case search endpoints use POST method with JSON request body:
 
-- `GET/POST /cases/by-case-number` - Search by case number
-- `GET/POST /cases/by-complainant` - Search by complainant name
-- `GET/POST /cases/by-respondent` - Search by respondent name
-- `GET/POST /cases/by-complainant-advocate` - Search by complainant's advocate
-- `GET/POST /cases/by-respondent-advocate` - Search by respondent's advocate
-- `GET/POST /cases/by-industry-type` - Search by industry type
-- `GET/POST /cases/by-judge` - Search by judge name
+- `POST /cases/by-case-number` - Search by case number
+- `POST /cases/by-complainant` - Search by complainant name
+- `POST /cases/by-respondent` - Search by respondent name
+- `POST /cases/by-complainant-advocate` - Search by complainant's advocate
+- `POST /cases/by-respondent-advocate` - Search by respondent's advocate
+- `POST /cases/by-industry-type` - Search by industry type
+- `POST /cases/by-judge` - Search by judge name
 
 ### Utility Endpoints
 - `GET /` - API information and endpoint listing
@@ -89,6 +93,8 @@ The API will be available at:
 - **Interactive Docs**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
 
+For production deployment, see: https://lexi-2zo3.onrender.com
+
 ## Configuration
 
 Environment variables can be set in a `.env` file or as system environment variables:
@@ -119,7 +125,7 @@ MAX_PAGE_SIZE=100
 ### 1. Get Available States
 
 ```bash
-curl -X GET "http://localhost:8000/states" \
+curl -X GET "https://lexi-2zo3.onrender.com/states" \
   -H "Content-Type: application/json"
 ```
 
@@ -129,11 +135,15 @@ curl -X GET "http://localhost:8000/states" \
   "states": [
     {
       "state_text": "KARNATAKA",
-      "state_id": "KA"
+      "state_id": "29"
     },
     {
       "state_text": "MAHARASHTRA", 
-      "state_id": "MH"
+      "state_id": "27"
+    },
+    {
+      "state_text": "DELHI",
+      "state_id": "7"
     }
   ]
 }
@@ -142,7 +152,7 @@ curl -X GET "http://localhost:8000/states" \
 ### 2. Get Commissions for a State
 
 ```bash
-curl -X GET "http://localhost:8000/commissions/KA" \
+curl -X GET "https://lexi-2zo3.onrender.com/commissions/29" \
   -H "Content-Type: application/json"
 ```
 
@@ -151,23 +161,33 @@ curl -X GET "http://localhost:8000/commissions/KA" \
 {
   "commissions": [
     {
-      "commission_text": "Karnataka State Consumer Disputes Redressal Commission",
-      "commission_id": "KA_STATE",
-      "state_id": "KA"
+      "commission_text": "District Consumer Disputes Redressal Commission",
+      "commission_id": "29_1",
+      "state_id": "29"
+    },
+    {
+      "commission_text": "DCDRC",
+      "commission_id": "29_2",
+      "state_id": "29"
+    },
+    {
+      "commission_text": "District Consumer Court",
+      "commission_id": "29_3",
+      "state_id": "29"
     }
   ],
-  "state_id": "KA"
+  "state_id": "29"
 }
 ```
 
-### 3. Search Cases by Case Number (POST)
+### 3. Search Cases by Case Number
 
 ```bash
-curl -X POST "http://localhost:8000/cases/by-case-number" \
+curl -X POST "https://lexi-2zo3.onrender.com/cases/by-case-number" \
   -H "Content-Type: application/json" \
   -d '{
     "state": "KARNATAKA",
-    "commission": "Karnataka State Consumer Disputes Redressal Commission",
+    "commission": "District Consumer Disputes Redressal Commission",
     "search_value": "CC/123/2023",
     "date_from": "2023-01-01",
     "date_to": "2023-12-31",
@@ -176,24 +196,73 @@ curl -X POST "http://localhost:8000/cases/by-case-number" \
   }'
 ```
 
-### 4. Search Cases by Complainant (GET)
+### 4. Search Cases by Complainant
 
 ```bash
-curl -X GET "http://localhost:8000/cases/by-complainant?state=KARNATAKA&commission=Karnataka%20State%20Commission&search_value=John%20Doe&page=1&per_page=20" \
-  -H "Content-Type: application/json"
+curl -X POST "https://lexi-2zo3.onrender.com/cases/by-complainant" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "state": "KARNATAKA",
+    "commission": "District Consumer Disputes Redressal Commission",
+    "search_value": "John Doe",
+    "page": 1,
+    "per_page": 20
+  }'
 ```
 
 ### 5. Search Cases by Respondent
 
 ```bash
-curl -X POST "http://localhost:8000/cases/by-respondent" \
+curl -X POST "https://lexi-2zo3.onrender.com/cases/by-respondent" \
   -H "Content-Type: application/json" \
   -d '{
     "state": "KARNATAKA",
-    "commission": "Karnataka State Commission",
+    "commission": "District Consumer Disputes Redressal Commission",
     "search_value": "XYZ Corporation",
     "page": 1,
     "per_page": 10
+  }'
+```
+
+### 6. Search Cases by Complainant Advocate
+
+```bash
+curl -X POST "https://lexi-2zo3.onrender.com/cases/by-complainant-advocate" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "state": "KARNATAKA",
+    "commission": "District Consumer Disputes Redressal Commission",
+    "search_value": "Advocate Name",
+    "page": 1,
+    "per_page": 20
+  }'
+```
+
+### 7. Search Cases by Industry Type
+
+```bash
+curl -X POST "https://lexi-2zo3.onrender.com/cases/by-industry-type" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "state": "KARNATAKA",
+    "commission": "District Consumer Disputes Redressal Commission",
+    "search_value": "Banking",
+    "page": 1,
+    "per_page": 20
+  }'
+```
+
+### 8. Search Cases by Judge
+
+```bash
+curl -X POST "https://lexi-2zo3.onrender.com/cases/by-judge" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "state": "KARNATAKA",
+    "commission": "District Consumer Disputes Redressal Commission",
+    "search_value": "Judge Name",
+    "page": 1,
+    "per_page": 20
   }'
 ```
 
@@ -307,13 +376,18 @@ CACHE_TTL_COMMISSIONS=86400
 ```
 
 ### Deployment on Render
-1. Connect your GitHub repository to Render
-2. Create a new Web Service
-3. Set the build command: `pip install -r requirements.txt`
-4. Set the start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-5. Add environment variables in the Render dashboard
 
-### Deployment on Railway
+**Live Deployment**: https://lexi-2zo3.onrender.com
+
+The application is successfully deployed on Render with the following configuration:
+1. Build command: `pip install -r requirements.txt`
+2. Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+3. Environment variables configured for production
+4. Auto-deployment on push to main branch
+
+### Alternative Deployment Options
+
+#### Railway
 1. Connect your GitHub repository to Railway
 2. Railway will auto-detect the Python app
 3. Add environment variables in the Railway dashboard
@@ -330,35 +404,90 @@ CACHE_TTL_COMMISSIONS=86400
 - [x] **Comprehensive test suite** with respx mocking
 - [x] **Pre-commit hooks** for code quality
 - [x] **Documentation** with API examples
-- [ ] **Hosted URL** (to be provided after deployment)
-- [ ] **GitHub repository link** (to be provided)
-- [x] **README with run instructions**
-- [ ] **Optional demo video/screenshots**
+- [x] **Hosted URL**: https://lexi-2zo3.onrender.com
+- [x] **Interactive API Documentation**: https://lexi-2zo3.onrender.com/docs
+- [x] **README with run instructions** and comprehensive API documentation
 
 ## API Schema
 
-The API follows a consistent schema for all responses:
+The API follows a consistent schema for all requests and responses:
 
-### Case Response Schema
+### Case Search Request Schema
+All case search endpoints (`/cases/by-*`) accept the following JSON request body:
+
 ```json
 {
-  "case_number": "string",
-  "case_stage": "string", 
-  "filing_date": "YYYY-MM-DD",
-  "complainant": "string",
-  "complainant_advocate": "string",
-  "respondent": "string",
-  "respondent_advocate": "string",
-  "document_link": "https://..."
+  "state": "string",                    // Required: State name (e.g., "KARNATAKA")
+  "commission": "string",               // Required: Commission name
+  "search_value": "string",             // Required: Search term specific to endpoint
+  "date_from": "YYYY-MM-DD",           // Optional: Start date filter
+  "date_to": "YYYY-MM-DD",             // Optional: End date filter
+  "page": 1,                           // Optional: Page number (default: 1)
+  "per_page": 20                       // Optional: Results per page (default: 20, max: 100)
+}
+```
+
+### Case Search Response Schema
+```json
+{
+  "cases": [
+    {
+      "case_number": "string",
+      "case_stage": "string", 
+      "filing_date": "YYYY-MM-DD",
+      "complainant": "string",
+      "complainant_advocate": "string",
+      "respondent": "string",
+      "respondent_advocate": "string",
+      "document_link": "https://..."
+    }
+  ],
+  "total_count": 1,
+  "page": 1,
+  "per_page": 20,
+  "total_pages": 1
+}
+```
+
+### State Response Schema
+```json
+{
+  "states": [
+    {
+      "state_text": "string",
+      "state_id": "string"
+    }
+  ]
+}
+```
+
+### Commission Response Schema
+```json
+{
+  "commissions": [
+    {
+      "commission_text": "string",
+      "commission_id": "string",
+      "state_id": "string"
+    }
+  ],
+  "state_id": "string"
 }
 ```
 
 ## Support
 
 For issues or questions:
-1. Check the interactive documentation at `/docs`
-2. Review the test files for usage examples
-3. Check the logs for detailed error information
+1. **Live API Documentation**: https://lexi-2zo3.onrender.com/docs - Interactive API testing
+2. **API Base URL**: https://lexi-2zo3.onrender.com - Production endpoint
+3. Review the test files for usage examples (`tests/` directory)
+4. Check the logs for detailed error information
+
+### Quick Test
+Try the health check endpoint:
+```bash
+curl https://lexi-2zo3.onrender.com/health
+```
 
 ## License
 

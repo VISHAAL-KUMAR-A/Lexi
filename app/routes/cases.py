@@ -3,7 +3,7 @@
 import math
 from typing import Union
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
 
 from app.core.config import get_settings
@@ -138,75 +138,14 @@ async def _search_cases_common(
         )
 
 
-def _validate_pagination(page: int, per_page: int) -> None:
-    """Validate pagination parameters."""
-    settings = get_settings()
-
-    if page < 1:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Page must be >= 1",
-        )
-
-    if per_page < 1:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Per page must be >= 1",
-        )
-
-    if per_page > settings.max_page_size:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Per page cannot exceed {settings.max_page_size}",
-        )
-
-
 @router.post(
     "/by-case-number",
     response_model=CaseSearchResponse,
     summary="Search cases by case number",
-    description="Search for cases using case number as the search criteria.",
+    description="Search for cases using case number as the search criteria. All parameters are provided in the request body.",
 )
-@router.get(
-    "/by-case-number",
-    response_model=CaseSearchResponse,
-    summary="Search cases by case number",
-    description="Search for cases using case number as the search criteria.",
-)
-async def search_by_case_number(
-    # Query parameters for GET requests
-    state: str = Query(None, description="State name"),
-    commission: str = Query(None, description="Commission name"),
-    search_value: str = Query(None, description="Case number to search for"),
-    date_from: str = Query(None, description="Start date (YYYY-MM-DD)"),
-    date_to: str = Query(None, description="End date (YYYY-MM-DD)"),
-    page: int = Query(1, description="Page number"),
-    per_page: int = Query(20, description="Items per page"),
-    # Request body for POST requests
-    request: CaseByNumberRequest = None,
-):
+async def search_by_case_number(request: CaseByNumberRequest):
     """Search for cases by case number."""
-    # Handle both GET and POST requests
-    if request is None:
-        # GET request - validate required parameters
-        if not all([state, commission, search_value]):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="state, commission, and search_value are required",
-            )
-
-        _validate_pagination(page, per_page)
-
-        request = CaseByNumberRequest(
-            state=state,
-            commission=commission,
-            search_value=search_value,
-            date_from=date_from,
-            date_to=date_to,
-            page=page,
-            per_page=per_page,
-        )
-
     return await _search_cases_common("case_number", request)
 
 
@@ -214,49 +153,10 @@ async def search_by_case_number(
     "/by-complainant",
     response_model=CaseSearchResponse,
     summary="Search cases by complainant",
-    description="Search for cases using complainant name as the search criteria.",
+    description="Search for cases using complainant name as the search criteria. All parameters are provided in the request body.",
 )
-@router.get(
-    "/by-complainant",
-    response_model=CaseSearchResponse,
-    summary="Search cases by complainant",
-    description="Search for cases using complainant name as the search criteria.",
-)
-async def search_by_complainant(
-    # Query parameters for GET requests
-    state: str = Query(None, description="State name"),
-    commission: str = Query(None, description="Commission name"),
-    search_value: str = Query(
-        None, description="Complainant name to search for"),
-    date_from: str = Query(None, description="Start date (YYYY-MM-DD)"),
-    date_to: str = Query(None, description="End date (YYYY-MM-DD)"),
-    page: int = Query(1, description="Page number"),
-    per_page: int = Query(20, description="Items per page"),
-    # Request body for POST requests
-    request: CaseByComplainantRequest = None,
-):
+async def search_by_complainant(request: CaseByComplainantRequest):
     """Search for cases by complainant name."""
-    # Handle both GET and POST requests
-    if request is None:
-        # GET request - validate required parameters
-        if not all([state, commission, search_value]):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="state, commission, and search_value are required",
-            )
-
-        _validate_pagination(page, per_page)
-
-        request = CaseByComplainantRequest(
-            state=state,
-            commission=commission,
-            search_value=search_value,
-            date_from=date_from,
-            date_to=date_to,
-            page=page,
-            per_page=per_page,
-        )
-
     return await _search_cases_common("complainant", request)
 
 
@@ -264,49 +164,10 @@ async def search_by_complainant(
     "/by-respondent",
     response_model=CaseSearchResponse,
     summary="Search cases by respondent",
-    description="Search for cases using respondent name as the search criteria.",
+    description="Search for cases using respondent name as the search criteria. All parameters are provided in the request body.",
 )
-@router.get(
-    "/by-respondent",
-    response_model=CaseSearchResponse,
-    summary="Search cases by respondent",
-    description="Search for cases using respondent name as the search criteria.",
-)
-async def search_by_respondent(
-    # Query parameters for GET requests
-    state: str = Query(None, description="State name"),
-    commission: str = Query(None, description="Commission name"),
-    search_value: str = Query(
-        None, description="Respondent name to search for"),
-    date_from: str = Query(None, description="Start date (YYYY-MM-DD)"),
-    date_to: str = Query(None, description="End date (YYYY-MM-DD)"),
-    page: int = Query(1, description="Page number"),
-    per_page: int = Query(20, description="Items per page"),
-    # Request body for POST requests
-    request: CaseByRespondentRequest = None,
-):
+async def search_by_respondent(request: CaseByRespondentRequest):
     """Search for cases by respondent name."""
-    # Handle both GET and POST requests
-    if request is None:
-        # GET request - validate required parameters
-        if not all([state, commission, search_value]):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="state, commission, and search_value are required",
-            )
-
-        _validate_pagination(page, per_page)
-
-        request = CaseByRespondentRequest(
-            state=state,
-            commission=commission,
-            search_value=search_value,
-            date_from=date_from,
-            date_to=date_to,
-            page=page,
-            per_page=per_page,
-        )
-
     return await _search_cases_common("respondent", request)
 
 
@@ -314,49 +175,10 @@ async def search_by_respondent(
     "/by-complainant-advocate",
     response_model=CaseSearchResponse,
     summary="Search cases by complainant advocate",
-    description="Search for cases using complainant advocate name as the search criteria.",
+    description="Search for cases using complainant advocate name as the search criteria. All parameters are provided in the request body.",
 )
-@router.get(
-    "/by-complainant-advocate",
-    response_model=CaseSearchResponse,
-    summary="Search cases by complainant advocate",
-    description="Search for cases using complainant advocate name as the search criteria.",
-)
-async def search_by_complainant_advocate(
-    # Query parameters for GET requests
-    state: str = Query(None, description="State name"),
-    commission: str = Query(None, description="Commission name"),
-    search_value: str = Query(
-        None, description="Complainant advocate name to search for"),
-    date_from: str = Query(None, description="Start date (YYYY-MM-DD)"),
-    date_to: str = Query(None, description="End date (YYYY-MM-DD)"),
-    page: int = Query(1, description="Page number"),
-    per_page: int = Query(20, description="Items per page"),
-    # Request body for POST requests
-    request: CaseByComplainantAdvocateRequest = None,
-):
+async def search_by_complainant_advocate(request: CaseByComplainantAdvocateRequest):
     """Search for cases by complainant advocate name."""
-    # Handle both GET and POST requests
-    if request is None:
-        # GET request - validate required parameters
-        if not all([state, commission, search_value]):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="state, commission, and search_value are required",
-            )
-
-        _validate_pagination(page, per_page)
-
-        request = CaseByComplainantAdvocateRequest(
-            state=state,
-            commission=commission,
-            search_value=search_value,
-            date_from=date_from,
-            date_to=date_to,
-            page=page,
-            per_page=per_page,
-        )
-
     return await _search_cases_common("complainant_advocate", request)
 
 
@@ -364,49 +186,10 @@ async def search_by_complainant_advocate(
     "/by-respondent-advocate",
     response_model=CaseSearchResponse,
     summary="Search cases by respondent advocate",
-    description="Search for cases using respondent advocate name as the search criteria.",
+    description="Search for cases using respondent advocate name as the search criteria. All parameters are provided in the request body.",
 )
-@router.get(
-    "/by-respondent-advocate",
-    response_model=CaseSearchResponse,
-    summary="Search cases by respondent advocate",
-    description="Search for cases using respondent advocate name as the search criteria.",
-)
-async def search_by_respondent_advocate(
-    # Query parameters for GET requests
-    state: str = Query(None, description="State name"),
-    commission: str = Query(None, description="Commission name"),
-    search_value: str = Query(
-        None, description="Respondent advocate name to search for"),
-    date_from: str = Query(None, description="Start date (YYYY-MM-DD)"),
-    date_to: str = Query(None, description="End date (YYYY-MM-DD)"),
-    page: int = Query(1, description="Page number"),
-    per_page: int = Query(20, description="Items per page"),
-    # Request body for POST requests
-    request: CaseByRespondentAdvocateRequest = None,
-):
+async def search_by_respondent_advocate(request: CaseByRespondentAdvocateRequest):
     """Search for cases by respondent advocate name."""
-    # Handle both GET and POST requests
-    if request is None:
-        # GET request - validate required parameters
-        if not all([state, commission, search_value]):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="state, commission, and search_value are required",
-            )
-
-        _validate_pagination(page, per_page)
-
-        request = CaseByRespondentAdvocateRequest(
-            state=state,
-            commission=commission,
-            search_value=search_value,
-            date_from=date_from,
-            date_to=date_to,
-            page=page,
-            per_page=per_page,
-        )
-
     return await _search_cases_common("respondent_advocate", request)
 
 
@@ -414,48 +197,10 @@ async def search_by_respondent_advocate(
     "/by-industry-type",
     response_model=CaseSearchResponse,
     summary="Search cases by industry type",
-    description="Search for cases using industry type as the search criteria.",
+    description="Search for cases using industry type as the search criteria. All parameters are provided in the request body.",
 )
-@router.get(
-    "/by-industry-type",
-    response_model=CaseSearchResponse,
-    summary="Search cases by industry type",
-    description="Search for cases using industry type as the search criteria.",
-)
-async def search_by_industry_type(
-    # Query parameters for GET requests
-    state: str = Query(None, description="State name"),
-    commission: str = Query(None, description="Commission name"),
-    search_value: str = Query(None, description="Industry type to search for"),
-    date_from: str = Query(None, description="Start date (YYYY-MM-DD)"),
-    date_to: str = Query(None, description="End date (YYYY-MM-DD)"),
-    page: int = Query(1, description="Page number"),
-    per_page: int = Query(20, description="Items per page"),
-    # Request body for POST requests
-    request: CaseByIndustryTypeRequest = None,
-):
+async def search_by_industry_type(request: CaseByIndustryTypeRequest):
     """Search for cases by industry type."""
-    # Handle both GET and POST requests
-    if request is None:
-        # GET request - validate required parameters
-        if not all([state, commission, search_value]):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="state, commission, and search_value are required",
-            )
-
-        _validate_pagination(page, per_page)
-
-        request = CaseByIndustryTypeRequest(
-            state=state,
-            commission=commission,
-            search_value=search_value,
-            date_from=date_from,
-            date_to=date_to,
-            page=page,
-            per_page=per_page,
-        )
-
     return await _search_cases_common("industry_type", request)
 
 
@@ -463,46 +208,8 @@ async def search_by_industry_type(
     "/by-judge",
     response_model=CaseSearchResponse,
     summary="Search cases by judge",
-    description="Search for cases using judge name as the search criteria.",
+    description="Search for cases using judge name as the search criteria. All parameters are provided in the request body.",
 )
-@router.get(
-    "/by-judge",
-    response_model=CaseSearchResponse,
-    summary="Search cases by judge",
-    description="Search for cases using judge name as the search criteria.",
-)
-async def search_by_judge(
-    # Query parameters for GET requests
-    state: str = Query(None, description="State name"),
-    commission: str = Query(None, description="Commission name"),
-    search_value: str = Query(None, description="Judge name to search for"),
-    date_from: str = Query(None, description="Start date (YYYY-MM-DD)"),
-    date_to: str = Query(None, description="End date (YYYY-MM-DD)"),
-    page: int = Query(1, description="Page number"),
-    per_page: int = Query(20, description="Items per page"),
-    # Request body for POST requests
-    request: CaseByJudgeRequest = None,
-):
+async def search_by_judge(request: CaseByJudgeRequest):
     """Search for cases by judge name."""
-    # Handle both GET and POST requests
-    if request is None:
-        # GET request - validate required parameters
-        if not all([state, commission, search_value]):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="state, commission, and search_value are required",
-            )
-
-        _validate_pagination(page, per_page)
-
-        request = CaseByJudgeRequest(
-            state=state,
-            commission=commission,
-            search_value=search_value,
-            date_from=date_from,
-            date_to=date_to,
-            page=page,
-            per_page=per_page,
-        )
-
     return await _search_cases_common("judge", request)

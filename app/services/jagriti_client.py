@@ -575,9 +575,9 @@ class JagritiClient:
 
                 # Add date filters if provided
                 if date_from:
-                    search_params["date_from"] = date_from.isoformat()
+                    search_params["date_from"] = date_from
                 if date_to:
-                    search_params["date_to"] = date_to.isoformat()
+                    search_params["date_to"] = date_to
 
                 # Add pagination
                 search_params["page"] = page

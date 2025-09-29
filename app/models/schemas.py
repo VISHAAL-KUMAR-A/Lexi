@@ -1,7 +1,7 @@
 """Pydantic models for request and response schemas."""
 
-from datetime import date
 from typing import List, Optional
+import re
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -26,69 +26,176 @@ class CommissionInfo(BaseModel):
 class CaseSearchRequest(BaseModel):
     """Base model for case search requests."""
 
-    state: str = Field(..., description="State name or ID", min_length=1)
-    commission: str = Field(...,
-                            description="Commission name or ID", min_length=1)
-    search_value: str = Field(..., description="Search term", min_length=1)
-    date_from: Optional[date] = Field(
-        None, description="Start date filter (YYYY-MM-DD)")
-    date_to: Optional[date] = Field(
-        None, description="End date filter (YYYY-MM-DD)")
-    page: int = Field(default=1, description="Page number (1-based)", ge=1)
+    state: str = Field(..., description="State name",
+                       min_length=1, examples=["KARNATAKA"])
+    commission: str = Field(..., description="Commission name", min_length=1,
+                            examples=["District Consumer Disputes Redressal Commission"])
+    search_value: str = Field(..., description="Search term", min_length=1,
+                              examples=["CC/123/2023"])
+    date_from: Optional[str] = Field(
+        None, description="Start date filter in YYYY-MM-DD format",
+        pattern=r"^\d{4}-\d{2}-\d{2}$",
+        examples=["2023-01-01"])
+    date_to: Optional[str] = Field(
+        None, description="End date filter in YYYY-MM-DD format",
+        pattern=r"^\d{4}-\d{2}-\d{2}$",
+        examples=["2023-12-31"])
+    page: int = Field(
+        default=1, description="Page number (1-based)", ge=1, examples=[1])
     per_page: int = Field(
-        default=20, description="Items per page", ge=1, le=100)
+        default=20, description="Items per page", ge=1, le=100, examples=[20])
+
+    @field_validator("date_from", "date_to")
+    @classmethod
+    def validate_date_format(cls, v):
+        """Validate date format."""
+        if v is not None:
+            if not re.match(r"^\d{4}-\d{2}-\d{2}$", v):
+                raise ValueError("Date must be in YYYY-MM-DD format")
+        return v
 
     @field_validator("date_to")
     @classmethod
     def validate_date_range(cls, v, info):
         """Validate that date_to is not before date_from."""
         if v and info.data.get("date_from"):
+            # Simple string comparison works for YYYY-MM-DD format
             if v < info.data["date_from"]:
                 raise ValueError(
                     "date_to must be greater than or equal to date_from")
         return v
 
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "state": "KARNATAKA",
+                "commission": "District Consumer Disputes Redressal Commission",
+                "search_value": "CC/123/2023",
+                "date_from": "2023-01-01",
+                "date_to": "2023-12-31",
+                "page": 1,
+                "per_page": 20
+            }
+        }
+
 
 class CaseByNumberRequest(CaseSearchRequest):
     """Request model for searching cases by case number."""
 
-    pass
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "state": "KARNATAKA",
+                "commission": "District Consumer Disputes Redressal Commission",
+                "search_value": "CC/123/2023",
+                "date_from": "2023-01-01",
+                "date_to": "2023-12-31",
+                "page": 1,
+                "per_page": 20
+            }
+        }
 
 
 class CaseByComplainantRequest(CaseSearchRequest):
     """Request model for searching cases by complainant."""
 
-    pass
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "state": "KARNATAKA",
+                "commission": "District Consumer Disputes Redressal Commission",
+                "search_value": "John Doe",
+                "date_from": "2023-01-01",
+                "date_to": "2023-12-31",
+                "page": 1,
+                "per_page": 20
+            }
+        }
 
 
 class CaseByRespondentRequest(CaseSearchRequest):
     """Request model for searching cases by respondent."""
 
-    pass
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "state": "KARNATAKA",
+                "commission": "District Consumer Disputes Redressal Commission",
+                "search_value": "XYZ Corporation",
+                "date_from": "2023-01-01",
+                "date_to": "2023-12-31",
+                "page": 1,
+                "per_page": 20
+            }
+        }
 
 
 class CaseByComplainantAdvocateRequest(CaseSearchRequest):
     """Request model for searching cases by complainant advocate."""
 
-    pass
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "state": "KARNATAKA",
+                "commission": "District Consumer Disputes Redressal Commission",
+                "search_value": "Advocate Smith",
+                "date_from": "2023-01-01",
+                "date_to": "2023-12-31",
+                "page": 1,
+                "per_page": 20
+            }
+        }
 
 
 class CaseByRespondentAdvocateRequest(CaseSearchRequest):
     """Request model for searching cases by respondent advocate."""
 
-    pass
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "state": "KARNATAKA",
+                "commission": "District Consumer Disputes Redressal Commission",
+                "search_value": "Advocate Johnson",
+                "date_from": "2023-01-01",
+                "date_to": "2023-12-31",
+                "page": 1,
+                "per_page": 20
+            }
+        }
 
 
 class CaseByIndustryTypeRequest(CaseSearchRequest):
     """Request model for searching cases by industry type."""
 
-    pass
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "state": "KARNATAKA",
+                "commission": "District Consumer Disputes Redressal Commission",
+                "search_value": "Banking",
+                "date_from": "2023-01-01",
+                "date_to": "2023-12-31",
+                "page": 1,
+                "per_page": 20
+            }
+        }
 
 
 class CaseByJudgeRequest(CaseSearchRequest):
     """Request model for searching cases by judge."""
 
-    pass
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "state": "KARNATAKA",
+                "commission": "District Consumer Disputes Redressal Commission",
+                "search_value": "Justice Sharma",
+                "date_from": "2023-01-01",
+                "date_to": "2023-12-31",
+                "page": 1,
+                "per_page": 20
+            }
+        }
 
 
 # Response models
@@ -173,7 +280,9 @@ class JagritiSearchParams(BaseModel):
     state_text: str = Field(..., description="State name")
     commission_text: str = Field(..., description="Commission name")
     search_value: str = Field(..., description="Search term")
-    date_from: Optional[date] = Field(None, description="Start date")
-    date_to: Optional[date] = Field(None, description="End date")
+    date_from: Optional[str] = Field(
+        None, description="Start date in YYYY-MM-DD format")
+    date_to: Optional[str] = Field(
+        None, description="End date in YYYY-MM-DD format")
     page: int = Field(default=1, description="Page number")
     per_page: int = Field(default=20, description="Items per page")
